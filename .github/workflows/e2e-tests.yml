@@ -8,6 +8,8 @@ on:
     branches: [master]
     paths-ignore:
     - '**.md'
+  schedule:
+    - cron:  '0 */12 * * *'
 
 jobs:
   e2e-tests:
@@ -17,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gutenberg: [ 'no', 'latest' ]
+        gutenberg: [ 'no', 'latest', 'pre-release' ]
     env:
       GUTENBERG: ${{ matrix.gutenberg }}
     if: github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name
@@ -95,12 +97,17 @@ jobs:
         ./bin/env.sh start
 
     - name: Run all tests
-      if: matrix.gutenberg == 'no'
+      if: github.event_name != 'schedule' && matrix.gutenberg == 'no'
       working-directory: projects/plugins/jetpack/tests/e2e
       run: yarn test-e2e
 
     - name: Run only blocks tests with latest Gutenberg
-      if: matrix.gutenberg == 'latest'
+      if: github.event_name != 'schedule' && matrix.gutenberg == 'latest'
+      working-directory: projects/plugins/jetpack/tests/e2e
+      run: yarn test-e2e --testNamePattern=blocks
+
+    - name: Scheduled run blocks tests with pre-release Gutenberg
+      if: github.event_name == 'schedule' && matrix.gutenberg == 'pre-release'
       working-directory: projects/plugins/jetpack/tests/e2e
       run: yarn test-e2e --testNamePattern=blocks
 
