@@ -220,6 +220,7 @@ class MapEdit extends Component {
 			scrollToZoom,
 			mapHeight,
 			showFullscreenButton,
+			isStaticMap,
 		} = attributes;
 		const {
 			addPointVisibility,
@@ -314,6 +315,12 @@ class MapEdit extends Component {
 							help={ __( 'Allow your visitors to display the map in fullscreen.', 'jetpack' ) }
 							checked={ showFullscreenButton }
 							onChange={ value => setAttributes( { showFullscreenButton: value } ) }
+						/>
+						<ToggleControl
+							label={ __( 'Display map as static image', 'jetpack' ) }
+							help={ __( 'Displays the map as a non-interactive static image', 'jetpack' ) }
+							checked={ isStaticMap }
+							onChange={ value => setAttributes( { isStaticMap: value } ) }
 						/>
 					</PanelBody>
 					{ points.length ? (
